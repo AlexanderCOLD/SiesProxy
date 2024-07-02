@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class McResponseResultData {
+public class SiesMcResponseResultData {
     private int id;
     private String address;
     private String siesId;

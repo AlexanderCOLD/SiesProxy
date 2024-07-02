@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @ToString
-public class McResponseCommandData {
+public class SiesMcResponseCommandData {
     private int resultCode;
-    private final List<McResponseResultData> result = new ArrayList<>();
+    private final List<SiesMcResponseResultData> result = new ArrayList<>();
 }

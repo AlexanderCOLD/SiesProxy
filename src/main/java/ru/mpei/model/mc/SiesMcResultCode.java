@@ -1,26 +1,8 @@
 package ru.mpei.model.mc;
 
-public enum McResultCode {
-    OK(0),
-    OK_0(100),
-    OK_1(101),
-    ERROR_0(-106),
-    ERROR_1(-110),
-    ERROR_2(-316),
-    ERROR_3(-595),
-    ERROR_4(-596),
-    ERROR_5(-999);
+public class SiesMcResultCode {
 
-    private final int code;
-
-    McResultCode(int code) {
-        this.code = code;
-    }
-
-    @Override
-    public String toString() {
-        System.out.println("CODE: " + code);
-
+    public String getInfo(int code) {
         String description = switch (code) {
             case 0 -> "Успешное выполнение";
             case 100 -> "Успешное выполнение. Выданы не все записи. Для получения остальных значений необходимо повторить запрос с увеличенным значением `lastCommandId`";

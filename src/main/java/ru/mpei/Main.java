@@ -1,23 +1,44 @@
 package ru.mpei;
 
-import ru.mpei.rest.clients.McClient;
-import ru.mpei.rest.clients.UnitClient;
+import lombok.extern.slf4j.Slf4j;
+import ru.mpei.model.mc.SiesMcUploadResponseData;
+import ru.mpei.rest.clients.SiesMcClient;
+import ru.mpei.rest.clients.SiesUnitClient;
 
+import java.util.List;
+
+@Slf4j
 public class Main {
 
-    static McClient mcClient = new McClient()
+    static SiesMcClient siesMcClient = SiesMcClient.instance()
             .setAddress("http://127.0.0.1:8000/") // http://192.168.5.10:8000/
             .setFilterSiesId("79d5e046882f");
 
-    static UnitClient unitClient = new UnitClient();
+    static SiesUnitClient siesUnitClient = SiesUnitClient.instance()
+            .setAddress("http://127.0.0.1:9876/");
 
     public static void main(String[] args) {
+        siesMcClient.initialize();
+        siesUnitClient.initialize();
 
-        var mcResponse = mcClient.sendRequest();
-        System.out.println("MC response: " + mcResponse);
-//        System.out.println("MC command: " + mcCommand);
+        var mcResponse = siesMcClient.getCommands();
+        log.info("MC response: {}", mcResponse);
 
-//        String unitResponse = unitClient.sendRequest(mcCommand);
-//        String mcResponse2 = mcClient.sendResponse(siesAddr, siesId, unitResponse);
+
+
+        var unitResponse = siesUnitClient.sendCommand(mcResponse.getResult().get(0).getCommand());
+        log.info("Unit response: {}", unitResponse);
+
+        if (unitResponse.getErrorCode() == 0 && unitResponse.getAnswerToMC() != null) {
+            log.info("Code is OK and answer exists");
+
+            var test = siesMcClient.sendResponse(
+                    List.of(
+                            new SiesMcUploadResponseData(mcResponse.getResult().get(0).getSiesId(), null, unitResponse.getAnswerToMC())
+                    )
+            );
+
+            System.out.println(test);
+        }
     }
 }

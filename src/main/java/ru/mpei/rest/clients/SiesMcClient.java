@@ -10,16 +10,16 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import ru.mpei.model.mc.McGetCommandData;
-import ru.mpei.model.mc.McResponseCommandData;
-import ru.mpei.model.mc.McUploadResponseData;
+import ru.mpei.model.mc.SiesMcGetCommandData;
+import ru.mpei.model.mc.SiesMcResponseCommandData;
+import ru.mpei.model.mc.SiesMcUploadResponseData;
 import ru.mpei.utils.HttpUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
 @Slf4j
-public class McClient {
+public class SiesMcClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     { objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY); }
@@ -30,25 +30,27 @@ public class McClient {
     private String mcResponseAddress = null;
     private String filterSiesId = null;
 
-    public McResponseCommandData sendRequest() {
-        try {
-            if (mcRequestAddress == null) throw new Exception("Address is not set");
 
+    public void initialize() {
+        if (mcRequestAddress == null || mcResponseAddress == null) throw new RuntimeException("Address is not set");
+        if (filterSiesId == null) throw new RuntimeException("SiesID filter is not set");
+    }
+
+    public SiesMcResponseCommandData getCommands() {
+        try {
             var requestJsonData = createJsonRequest();
             var postRequest = HttpUtils.createHttpPost(mcRequestAddress, requestJsonData);
             var response = httpClient.execute(postRequest);
 
-            return objectMapper.readValue(EntityUtils.toString(response.getEntity()), McResponseCommandData.class);
+            return objectMapper.readValue(EntityUtils.toString(response.getEntity()), SiesMcResponseCommandData.class);
         } catch (Exception e) {
             log.error("Failed to get response from API by send request: {}", e.toString());
             return null;
         }
     }
 
-    public String sendResponse(List<McUploadResponseData> responseData) {
+    public String sendResponse(List<SiesMcUploadResponseData> responseData) {
         try {
-            if (mcResponseAddress == null) throw new Exception("Address is not set");
-
             var responseJsonData = objectMapper.writeValueAsString(responseData);
             var postRequest = HttpUtils.createHttpPost(mcResponseAddress, responseJsonData);
             var response = httpClient.execute(postRequest);
@@ -63,16 +65,17 @@ public class McClient {
 
     /** Создать Json для запроса */
     private String createJsonRequest() throws JsonProcessingException {
-        var mcRequestData = new McGetCommandData();
+        var mcRequestData = new SiesMcGetCommandData();
         mcRequestData.setMaxCommandCount(10);
-
-        if (filterSiesId != null) mcRequestData.getFilterSiesId().add(filterSiesId);
+        mcRequestData.getFilterSiesId().add(filterSiesId);
 
         return objectMapper.writeValueAsString(mcRequestData);
     }
 
+    public static SiesMcClient instance() { return new SiesMcClient(); }
+
     /** Задать адрес MC */
-    public McClient setAddress(String address) {
+    public SiesMcClient setAddress(String address) {
         this.mcRequestAddress = address + "api/v2/proxy/get-commands";
         this.mcResponseAddress = address + "api/v2/proxy/upload-response";
 
@@ -80,7 +83,7 @@ public class McClient {
     }
 
     /** Задать фильтр по SIES ID */
-    public McClient setFilterSiesId(String filterSiesId) {
+    public SiesMcClient setFilterSiesId(String filterSiesId) {
         this.filterSiesId = Hex.encodeHexString(filterSiesId.getBytes(StandardCharsets.UTF_8));
 
         return this;

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class McGetCommandData {
+public class SiesMcGetCommandData {
     private Integer maxCommandCount;
     private Integer lastCommandId;
 

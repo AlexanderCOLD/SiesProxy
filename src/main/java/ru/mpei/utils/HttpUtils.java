@@ -10,15 +10,12 @@ import java.io.IOException;
 public class HttpUtils {
 
     public static HttpPost createHttpPost(String address, String postData) throws IOException {
-        HttpPost postRequest = new HttpPost(address);
+        var postRequest = new HttpPost(address);
         postRequest.addHeader("Content-Type", "application/json");
         postRequest.addHeader("Connection", "keep-alive");
         postRequest.setEntity(new StringEntity(postData));
 
-        log.info("Post data:\n{}\n{}",
-                postRequest,
-                EntityUtils.toString(postRequest.getEntity())
-        );
+        log.info("Post data: {}:   {}", postRequest, EntityUtils.toString(postRequest.getEntity()));
 
         return postRequest;
     }
