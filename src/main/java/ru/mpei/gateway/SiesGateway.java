@@ -44,14 +44,14 @@ public class SiesGateway {
 
             try {
                 while (running) {
-                    log.info("Loop");
+                    Thread.sleep(loopTimeMs);
 
                     for (var unitClient : unitClients) {
                         var mcResponse = mcClient.getCommands(unitClient.getSiesId());
 
                         if (mcResponse.isPresent()) {
                             var mcResp = mcResponse.get();
-                            log.info("MC response: {}", mcResp);
+                            log.debug("MC response: {}", mcResp);
 
                             final var siesResponseList = new ArrayList<SiesMcUploadResponseData>();
 
@@ -61,7 +61,7 @@ public class SiesGateway {
                                 if (answerData.isPresent()) {
                                     var answer = answerData.get().getAnswerToMC();
                                     if (answer != null) {
-                                        log.info("Answer exists: {}", answer);
+                                        log.debug("Answer from Unit: {}", answer);
 
                                         var siesResponse = new SiesMcUploadResponseData();
                                         siesResponse.setSiesId(unitClient.getSiesId());
@@ -75,8 +75,6 @@ public class SiesGateway {
                             if (!siesResponseList.isEmpty()) mcClient.sendResponse(siesResponseList);
                         }
                     }
-
-                    Thread.sleep(loopTimeMs);
                 }
             } catch (Exception e) { throw new RuntimeException(e); }
         });

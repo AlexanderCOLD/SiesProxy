@@ -19,10 +19,10 @@ public class HttpUtils {
     public static HttpPost createHttpPost(String address, String postData) {
         var postRequest = new HttpPost(address);
         postRequest.addHeader("Content-Type", "application/json");
-        postRequest.addHeader("Connection", "keep-alive");
+//        postRequest.addHeader("Connection", "keep-alive");
         postRequest.setEntity(new StringEntity(postData));
 
-        log.info("Post data: {}:   {}", postRequest, EntityUtils.toString(postRequest.getEntity()));
+        log.debug("Post data: {}:   {}", postRequest, EntityUtils.toString(postRequest.getEntity()));
 
         return postRequest;
     }
