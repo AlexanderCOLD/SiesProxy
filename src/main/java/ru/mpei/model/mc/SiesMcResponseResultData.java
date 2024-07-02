@@ -3,6 +3,9 @@ package ru.mpei.model.mc;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Описание запрошенной команды от MC
+ */
 @Getter
 @ToString
 public class SiesMcResponseResultData {

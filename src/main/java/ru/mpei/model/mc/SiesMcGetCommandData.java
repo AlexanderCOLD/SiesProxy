@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Запрос команд от MC
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SiesMcGetCommandData {

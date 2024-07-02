@@ -3,8 +3,8 @@ package ru.mpei.rest.clients;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 
+/**
+ * Rest Client MC
+ */
 @Slf4j
 public class SiesMcClient {
 
@@ -33,6 +36,12 @@ public class SiesMcClient {
         if (mcRequestAddress == null || mcResponseAddress == null) throw new RuntimeException("Address is not set");
     }
 
+
+    /**
+     * Запрос списка команд от МС
+     * @param siesId - фильтр юнита
+     * @return - список команд для юнита
+     */
     public Optional<SiesMcResponseCommandData> getCommands(String siesId) {
         try {
             var requestJsonData = createJsonRequest(siesId);
@@ -46,6 +55,11 @@ public class SiesMcClient {
         }
     }
 
+    /**
+     * Отправка ответов от юнитов
+     * @param responseData - адрес и ответ
+     * @return - результат запроса
+     */
     public Optional<String> sendResponse(List<SiesMcUploadResponseData> responseData) {
         try {
             var responseJsonData = objectMapper.writeValueAsString(responseData);
@@ -59,8 +73,13 @@ public class SiesMcClient {
         }
     }
 
-    /** Создать Json для запроса */
-    private String createJsonRequest(String siesId) throws JsonProcessingException {
+    /**
+     * Создать Json для запроса
+     * @param siesId - фильтр юнита
+     * @return - json содержимое запроса
+     */
+    @SneakyThrows
+    private String createJsonRequest(String siesId) {
         var mcRequestData = new SiesMcGetCommandData();
         mcRequestData.setMaxCommandCount(10);
         mcRequestData.getFilterSiesId().add(siesId);
@@ -70,7 +89,10 @@ public class SiesMcClient {
 
     public static SiesMcClient instance() { return new SiesMcClient(); }
 
-    /** Задать адрес MC */
+    /**
+     * Задать адрес MC
+     * @param address - сетевой адрес в формате<a href=" http://127.0.0.1:8000">...</a>/
+     */
     public SiesMcClient setAddress(String address) {
         this.mcRequestAddress = address + "api/v2/proxy/get-commands";
         this.mcResponseAddress = address + "api/v2/proxy/upload-response";

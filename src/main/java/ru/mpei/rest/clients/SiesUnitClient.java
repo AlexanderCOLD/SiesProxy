@@ -17,6 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 
+/**
+ * Rest Unit MC
+ */
 @Slf4j
 public class SiesUnitClient {
 
@@ -28,13 +31,20 @@ public class SiesUnitClient {
     private String unitAddress = null;
 
     @Getter
-    private String siesId = null;
+    private String siesId = null; // Hex идентификатор
 
 
     public void initialize() {
         if (unitAddress == null) throw new RuntimeException("Address is not set");
     }
 
+
+
+    /**
+     * Отправка команды от MC
+     * @param command - команда
+     * @return - ответ (возможный) от Unit в MC
+     */
     public Optional<SiesUnitCommandAnswerData> sendCommand(String command) {
         try {
             var requestJsonData = objectMapper.writeValueAsString(new SiesUnitCommandData(command));
@@ -57,9 +67,12 @@ public class SiesUnitClient {
         return this;
     }
 
-    /** Задать фильтр по SIES ID */
-    public SiesUnitClient setSiesId(String filterSiesId) {
-        this.siesId = Hex.encodeHexString(filterSiesId.getBytes(StandardCharsets.UTF_8));
+    /**
+     * Задать SIES идентификатор
+     * @param siesId - идентификатор (в привычном виде)
+     */
+    public SiesUnitClient setSiesId(String siesId) {
+        this.siesId = Hex.encodeHexString(siesId.getBytes(StandardCharsets.UTF_8));
 
         return this;
     }

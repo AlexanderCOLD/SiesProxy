@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Шлюз обмена данными между MC и Units по Rest
+ */
 @Slf4j
 public class SiesGateway {
 

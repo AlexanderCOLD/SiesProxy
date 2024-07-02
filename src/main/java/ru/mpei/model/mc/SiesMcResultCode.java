@@ -1,5 +1,8 @@
 package ru.mpei.model.mc;
 
+/**
+ * Расшифровка кода ответа
+ */
 public class SiesMcResultCode {
 
     public String getInfo(int code) {

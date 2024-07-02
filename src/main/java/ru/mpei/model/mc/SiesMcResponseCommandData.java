@@ -6,6 +6,9 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Результат запроса команд от MC
+ */
 @Getter
 @ToString
 public class SiesMcResponseCommandData {
