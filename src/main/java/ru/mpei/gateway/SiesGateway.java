@@ -51,7 +51,7 @@ public class SiesGateway {
 
                         if (mcResponse.isPresent()) {
                             var mcResp = mcResponse.get();
-                            log.debug("MC response: {}", mcResp);
+                            log.debug("MC response {}: {}", mcClient.getMcRequestAddress(), mcResp);
 
                             final var siesResponseList = new ArrayList<SiesMcUploadResponseData>();
 
@@ -61,7 +61,7 @@ public class SiesGateway {
                                 if (answerData.isPresent()) {
                                     var answer = answerData.get().getAnswerToMC();
                                     if (answer != null) {
-                                        log.debug("Answer from Unit: {}", answer);
+                                        log.debug("Answer from Unit {}: {}", unitClient.getUnitAddress(), answer);
 
                                         var siesResponse = new SiesMcUploadResponseData();
                                         siesResponse.setSiesId(unitClient.getSiesId());

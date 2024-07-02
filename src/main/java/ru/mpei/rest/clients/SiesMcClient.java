@@ -4,6 +4,7 @@ package ru.mpei.rest.clients;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
@@ -28,6 +29,7 @@ public class SiesMcClient {
 
     private final HttpClient httpClient = HttpClientBuilder.create().build();
 
+    @Getter
     private String mcRequestAddress = null;
     private String mcResponseAddress = null;
 

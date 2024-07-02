@@ -28,6 +28,7 @@ public class SiesUnitClient {
 
     private final HttpClient httpClient = HttpClientBuilder.create().build();
 
+    @Getter
     private String unitAddress = null;
 
     @Getter
