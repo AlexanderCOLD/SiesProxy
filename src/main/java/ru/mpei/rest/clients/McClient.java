@@ -6,15 +6,15 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpResponse;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.mpei.model.mc.McGetCommandData;
 import ru.mpei.model.mc.McResponseCommandData;
 import ru.mpei.model.mc.McUploadResponseData;
 import ru.mpei.utils.HttpUtils;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
@@ -26,17 +26,17 @@ public class McClient {
 
     private final HttpClient httpClient = HttpClientBuilder.create().build();
 
-    private String address = null;
+    private String mcRequestAddress = null;
+    private String mcResponseAddress = null;
     private String filterSiesId = null;
 
     public McResponseCommandData sendRequest() {
         try {
-            if (address == null) throw new Exception("Address is not set");
-            String mcRequestAddress = address + "api/v2/proxy/get-commands";
+            if (mcRequestAddress == null) throw new Exception("Address is not set");
 
-            String requestJsonData = createJsonRequest();
-            HttpPost postRequest = HttpUtils.createHttpPost(mcRequestAddress, requestJsonData);
-            HttpResponse response = httpClient.execute(postRequest);
+            var requestJsonData = createJsonRequest();
+            var postRequest = HttpUtils.createHttpPost(mcRequestAddress, requestJsonData);
+            var response = httpClient.execute(postRequest);
 
             return objectMapper.readValue(EntityUtils.toString(response.getEntity()), McResponseCommandData.class);
         } catch (Exception e) {
@@ -47,12 +47,11 @@ public class McClient {
 
     public String sendResponse(List<McUploadResponseData> responseData) {
         try {
-            if (address == null) throw new Exception("Address is not set");
-            String mcResponseAddress = address + "api/v2/proxy/upload-response";
+            if (mcResponseAddress == null) throw new Exception("Address is not set");
 
-            String responseJsonData = objectMapper.writeValueAsString(responseData);
-            HttpPost postRequest = HttpUtils.createHttpPost(mcResponseAddress, responseJsonData);
-            HttpResponse response = httpClient.execute(postRequest);
+            var responseJsonData = objectMapper.writeValueAsString(responseData);
+            var postRequest = HttpUtils.createHttpPost(mcResponseAddress, responseJsonData);
+            var response = httpClient.execute(postRequest);
 
             return EntityUtils.toString(response.getEntity());
         } catch (Exception e) {
@@ -62,25 +61,27 @@ public class McClient {
         }
     }
 
+    /** Создать Json для запроса */
     private String createJsonRequest() throws JsonProcessingException {
-        McGetCommandData mcRequestData = new McGetCommandData();
+        var mcRequestData = new McGetCommandData();
         mcRequestData.setMaxCommandCount(10);
 
-        if (filterSiesId != null) {
-//            mcRequestData.getFilterSiesId().add(filterSiesId);
-        }
+        if (filterSiesId != null) mcRequestData.getFilterSiesId().add(filterSiesId);
 
         return objectMapper.writeValueAsString(mcRequestData);
     }
 
+    /** Задать адрес MC */
     public McClient setAddress(String address) {
-        this.address = address;
+        this.mcRequestAddress = address + "api/v2/proxy/get-commands";
+        this.mcResponseAddress = address + "api/v2/proxy/upload-response";
 
         return this;
     }
 
+    /** Задать фильтр по SIES ID */
     public McClient setFilterSiesId(String filterSiesId) {
-        this.filterSiesId = filterSiesId;
+        this.filterSiesId = Hex.encodeHexString(filterSiesId.getBytes(StandardCharsets.UTF_8));
 
         return this;
     }
