@@ -14,7 +14,7 @@ import java.util.List;
  * Шлюз обмена данными между MC и Units по Rest
  */
 @Slf4j
-public class SiesGateway {
+public class SiesRestGateway {
 
     private final long loopTimeMs = 1000;
 
@@ -28,7 +28,7 @@ public class SiesGateway {
 
 
 
-    public SiesGateway(@NonNull SiesMcClient mcClient) {
+    public SiesRestGateway(@NonNull SiesMcClient mcClient) {
         this.mcClient = mcClient;
     }
 
